@@ -1,0 +1,45 @@
+name: Example run
+on:
+  push:
+    branches:
+      - main
+jobs:
+  update-timestamp:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Update timestamp.py
+        run: |
+          $timestampFile = "timestamp.py"
+          $currentTimestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
+          Set-Content -Path $timestampFile -Value "
+          #! /usr/bin/python
+          # vim: set filetype=python:
+          
+          # timestamp.py:  Records the latest time the ACME-python GitHub repository was
+          # updated.
+          
+          # Copyright (C) 2024 GE Vernova and/or its affiliates. All rights reserved. The
+          # information herein is proprietary information of GE Vernova and/or its
+          # affiliates. Thus, it is being provided with the explicit expectation of
+          # restricted use. All persons or legal entities receiving this information
+          # shall be deemed by the act of its receipt to have contractually agreed to
+          # make no duplications, reproductions of any nature by any means,
+          # modifications, disclosures, or use any portion of this material; except as is
+          # expressly authorized in writing by GE Vernova and/or its affiliates.
+          
+          "
+          Add-Content -Path $timestampFile -Value "ACME_timestamp = '$currentTimestamp'"
+      - name: Commit and push timestamp
+        run: |
+          git config --global user.name "github-actions[bot]"
+
+          git config --global user.email
+          "github-actions[bot]@users.noreply.github.com"
+
+          git add timestamp.py
+
+          git commit -m "Update timestamp.py with latest timestamp"
+
+          git push
